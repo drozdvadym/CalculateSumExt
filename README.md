@@ -20,12 +20,15 @@ UNINSTALL:
 3) run command regsvr32 /u CalculateSumExt.dll
 
 EXECUTABLE:
+
 There are test utility (testSample.exe) that can Calculate information about all files in directory that passed to it as argument. and save this information to file "file_inf.log" 
 
 ALSO:
+
 You can build src (there is VS2013 solution), modify them and using it as you want and whenever you want. 
 
 DEPENDENCIES:
+
 This software depend on boost (boost filesystem), OpenSSL (calcMD5 function) and WIndows API.
 
 Software has some C++11 tricks
