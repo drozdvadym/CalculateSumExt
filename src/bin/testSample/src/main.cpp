@@ -9,13 +9,13 @@
 //
 
 //
-// ³ample that using FileInfoLogger
+// smple that using FileInfoLogger
 //
 
 //
-//	THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
-//	EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
-//	WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
+// EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 //
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -31,8 +31,6 @@
 
 #include <iostream>
 #include <vector>
-
-namespace fs = ::boost::filesystem;
 
 ///////////////////////////////////////////////////////////////////////////////
 // %% BeginSection: variable definitions
@@ -74,6 +72,7 @@ static void _t_unknwn_error_occured();
 #else
 # define DFLT_SEPARATOR "/"
 #endif
+
 ///////////////////////////////////////////////////////////////////////////////
 // %% BeginSection: definitions
 //
@@ -119,6 +118,11 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// %% BeginSection: local definitions
+//
+
 void getAllFileNames(const fs::path& root_path, std::vector<fs::path>& fileNames)
 {
 	if (!fs::exists(root_path) && !fs::is_directory(root_path))
@@ -179,3 +183,7 @@ static void _t_unknwn_error_occured()
 
 	std::cerr << errMessage << std::endl;
 }
+
+//
+//
+//
