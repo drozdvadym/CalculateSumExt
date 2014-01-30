@@ -46,7 +46,6 @@
 // %% BeginSection: definitions
 //
 
-
 FileInfoLogger::FileInfoLogger(std::vector<std::wstring> filePaths, std::wstring logFilePath) :
 	filePaths_(filePaths.begin(), filePaths.end()),
 	logFilePath_(logFilePath)
@@ -70,7 +69,7 @@ FileInfoLogger::FileInfoLogger(std::vector<fs::path> filePaths, fs::path logFile
 
 void FileInfoLogger::internal_init()
 {
-	//Fisrt of all check if fNames containts fullLogFileName
+	//Fisrt of all check if fNames containts logFilePath_
 	fs::path cpath(logFilePath_);
 	auto finded = std::find_if(
 		filePaths_.begin(),
@@ -83,7 +82,7 @@ void FileInfoLogger::internal_init()
 		filePaths_.erase(finded);
 	}
 
-	//Delete all dirs
+	//Delete all dirs paths
 	filePaths_.erase(
 		std::remove_if(
 			filePaths_.begin(),
@@ -136,7 +135,7 @@ bool FileInfoLogger::writeResultsIntoLog(std::fstream & sfile)
 			res = finfo.toString();
 
 			// Rewrite the file
-			//Awesome :)
+			// Awesome :)
 			{
 				std::stringstream buffer;
 
@@ -163,8 +162,8 @@ bool FileInfoLogger::writeResultsIntoLog(std::fstream & sfile)
 
 		//@todo: need correct thread handling!!!
 
-		//Every next cycle we sleep longer
-		dura += std::chrono::microseconds(20);
+		// Every next cycle we sleep longer
+		// dura += std::chrono::microseconds(20);
 	}
 
 	return true;
