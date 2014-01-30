@@ -13,13 +13,13 @@
 //
 
 /*
- *	This source is subject to the Microsoft Public License.
- *	See http://www.microsoft.com/opensource/licenses.mspx#Ms-PL.
- *	All other rights reserved.
+ * This source is subject to the Microsoft Public License.
+ * See http://www.microsoft.com/opensource/licenses.mspx#Ms-PL.
+ * All other rights reserved.
  *
- *	THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, 
- *	EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
- *	WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+ * THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, 
+ * EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
  */
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -44,8 +44,8 @@ extern long g_cDllRef;
 void OnVerbDisplayFileNameIndepend(HWND hWnd, std::vector<std::wstring> fileNames, std::wstring logFileNames);
 
 CalculateSumExt::CalculateSumExt(void) :
-	m_cRef(1), 
-	log_file_name(L"file_inf.log"),
+    m_cRef(1), 
+    log_file_name(L"file_inf.log"),
     m_pszMenuText(L"Calculate Information"),
     m_pszVerb("fileinfologger"),
     m_pwszVerb(L"fileinfologger"),
@@ -165,8 +165,8 @@ IFACEMETHODIMP_(ULONG) CalculateSumExt::Release()
 IFACEMETHODIMP
 CalculateSumExt::Initialize(
     LPCITEMIDLIST pidlFolder,
-	LPDATAOBJECT pDataObj,
-	HKEY hKeyProgID
+    LPDATAOBJECT pDataObj,
+    HKEY hKeyProgID
 	)
 {
     if (NULL == pDataObj)
@@ -247,10 +247,10 @@ CalculateSumExt::Initialize(
 IFACEMETHODIMP
 CalculateSumExt::QueryContextMenu(
     HMENU hMenu,
-	UINT indexMenu,
-	UINT idCmdFirst,
-	UINT idCmdLast,
-	UINT uFlags
+    UINT indexMenu,
+    UINT idCmdFirst,
+    UINT idCmdLast,
+    UINT uFlags
 	)
 {
     // If uFlags include CMF_DEFAULTONLY then we should not do anything.
@@ -387,11 +387,11 @@ CalculateSumExt::InvokeCommand(LPCMINVOKECOMMANDINFO pici)
 
 IFACEMETHODIMP
 CalculateSumExt::GetCommandString(
-	UINT_PTR idCommand, 
+    UINT_PTR idCommand, 
     UINT uFlags,
-	UINT *pwReserved,
-	LPSTR pszName,
-	UINT cchMax
+    UINT *pwReserved,
+    LPSTR pszName,
+    UINT cchMax
 	)
 {
     HRESULT hr = E_INVALIDARG;
@@ -432,3 +432,7 @@ CalculateSumExt::GetCommandString(
 }
 
 #pragma endregion
+
+//
+//
+//
