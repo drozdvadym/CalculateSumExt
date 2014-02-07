@@ -35,6 +35,10 @@ namespace fs = ::boost::filesystem;
 
 #include <string>
 
+///////////////////////////////////////////////////////////////////////////////
+// %% BeginSection: type declarations
+//
+
 struct FileInfo {
 	std::string full_name;
 	std::string short_name;
@@ -42,8 +46,7 @@ struct FileInfo {
 	std::string creation;
 	std::string human_readable_size;
 	long long   size;
-
-	bool is_correct;
+	bool        is_correct;
 
 	std::string toString()
 	{
@@ -58,11 +61,17 @@ struct FileInfo {
 	}
 };
 
+///////////////////////////////////////////////////////////////////////////////
+// %% BeginSection: functions declarations
+//
+
 // Convert a wide Unicode string to an UTF8 string
 std::string utf8_encode(const std::wstring &wstr);
+std::string utf8_encode(const std::string &wstr);
 
 // Convert an UTF8 string to a wide Unicode String
 std::wstring utf8_decode(const std::string &str);
+std::wstring utf8_decode(const std::wstring &str);
 
 //
 //

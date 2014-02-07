@@ -202,10 +202,14 @@ CalculateSumExt::Initialize(
 			);
 			if (!dres)
 				continue;
-			// Determine if selected file is folder
-			Attributes = GetFileAttributes(curFileName);
-			if (Attributes & FILE_ATTRIBUTE_DIRECTORY)
-				continue;
+
+			/*
+				Now filelogger filter folders
+				// Determine if selected file is folder
+				Attributes = GetFileAttributes(curFileName);
+				if (Attributes & FILE_ATTRIBUTE_DIRECTORY)
+					continue;
+			*/
 
 			// Save work dir
 			if (!fileNames_.size()) {

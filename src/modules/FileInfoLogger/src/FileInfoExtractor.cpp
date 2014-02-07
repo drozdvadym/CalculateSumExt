@@ -30,10 +30,11 @@
 
 #include <ctime>
 #include <fstream>
-#include <sstream>
-#include <iostream>
 #include <iomanip>
-#include <Windows.h>
+
+#ifdef _WIN32
+# include <Windows.h>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // %% BeginSection: local function declaration
@@ -51,19 +52,47 @@ std::string byte_to_hex_string(unsigned char);
 // Convert a wide Unicode string to an UTF8 string
 std::string utf8_encode(const std::wstring &wstr)
 {
-	int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
-	std::string strTo(size_needed, 0);
-	WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], size_needed, NULL, NULL);
-	return strTo;
+#ifdef _WIN32
+	int size_needed = WideCharToMultiByte(
+		CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL
+	);
+	std::string retVal(size_needed, 0);
+	WideCharToMultiByte(
+		CP_UTF8, 0, &wstr[0], (int)wstr.size(), &retVal[0], size_needed, NULL, NULL
+	);
+#else //@todo: Write correct decoding for UNIX and LINUX like system
+	std::string retVal(wstr.begin(), wstr.end());
+#endif
+	return (retVal);
+}
+
+//if we have std::string we do nothing
+std::string utf8_encode(const std::string &str)
+{
+	return (str);
 }
 
 // Convert an UTF8 string to a wide Unicode String
 std::wstring utf8_decode(const std::string &str)
 {
-	int size_needed = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0);
-	std::wstring wstrTo(size_needed, 0);
-	MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &wstrTo[0], size_needed);
-	return wstrTo;
+#ifdef _WIN32
+	int size_needed = MultiByteToWideChar(
+		CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0
+	);
+	std::wstring retVal(size_needed, 0);
+	MultiByteToWideChar(
+		CP_UTF8, 0, &str[0], (int)str.size(), &retVal[0], size_needed
+	);
+#else //@todo: Write correct decoding for UNIX and LINUX like system
+	std::wstring retVal(str.begin(), str.end());
+#endif
+	return (retVal);
+}
+
+//if we have std::wstring we do nothing
+std::wstring utf8_decode(const std::wstring &wstr)
+{
+	return (wstr);
 }
 
 FileInfo FileInfoExtract(fs::path filePath)
@@ -77,8 +106,8 @@ FileInfo FileInfoExtract(fs::path filePath)
 		
 		finfo.full_name = utf8_encode(filePath.c_str());
 		finfo.short_name = utf8_encode(filePath.filename().c_str());
-		finfo.size = fs::file_size(filePath, ec);
 
+		finfo.size = fs::file_size(filePath, ec);
 		if (!!ec) {
 			break;
 			//NOTREACHED
@@ -126,9 +155,8 @@ std::string getTimeCreation(fs::path filePath, boost::system::error_code ec)
 	retval += std::to_string(tminfo->tm_mon + 1) + "/";
 	retval += std::to_string(tminfo->tm_year + 1900);
 
-	return retval;
+	return (retval);
 }
-
 
 std::string getFileMD5(fs::path filePath)
 {
@@ -142,18 +170,17 @@ std::string getFileMD5(fs::path filePath)
 	std::ifstream file(filePath.c_str(), std::ios::binary);
 	MD5_CTX mdContext;
 
-	if (!file.is_open())
+	if (!file.is_open()) {
 		return retval;
+		/*NOTREACHED*/
+	}
 
 	MD5_Init(&mdContext);
-	while (file.read((char *)data, BUF_SIZE)) {
-		MD5_Update(&mdContext, data, BUF_SIZE);
-		//std::cout << "Read " << file.gcount() << "bytes\n";
-		//file.seekg(BUF_SIZE, std::ios_base::cur);
-	}
-	MD5_Update(&mdContext, data, file.gcount());
-	//std::cout << "Read " << file.gcount() << "bytes\n";
 
+	while (file.read((char *)data, BUF_SIZE))
+		MD5_Update(&mdContext, data, BUF_SIZE);
+
+	MD5_Update(&mdContext, data, file.gcount());
 	MD5_Final(c, &mdContext);
 
 	file.close();
@@ -164,7 +191,6 @@ std::string getFileMD5(fs::path filePath)
 
 	return (retval);
 }
-
 
 std::string getHumanReadableSize(long long fileSize)
 {
@@ -190,6 +216,7 @@ std::string getHumanReadableSize(long long fileSize)
 	}
 	//Remove last space symbol
 	retval.erase(retval.end() - 1);
+
 	return (retval);
 }
 

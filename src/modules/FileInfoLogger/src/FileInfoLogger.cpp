@@ -14,9 +14,9 @@
 
 //
 // @todo: 
-// 1) add normal error handling
-// 2) add normal thread handling
-//    2.1) if one thread error occurred -> stop all another
+// 1. add normal error handling
+// 2. add normal thread handling
+//  2.1. if one thread error occurred -> stop all another
 //
 
 //
@@ -47,22 +47,19 @@
 //
 
 FileInfoLogger::FileInfoLogger(std::vector<std::wstring> filePaths, std::wstring logFilePath) :
-	filePaths_(filePaths.begin(), filePaths.end()),
-	logFilePath_(logFilePath)
+	filePaths_(filePaths.begin(), filePaths.end()), logFilePath_(logFilePath)
 {
 	internal_init();
 }
 
 FileInfoLogger::FileInfoLogger(std::vector<std::string> filePaths, std::string logFilePath) :
-	filePaths_(filePaths.begin(), filePaths.end()),
-	logFilePath_(logFilePath)
+	filePaths_(filePaths.begin(), filePaths.end()), logFilePath_(logFilePath)
 {
 	internal_init();
 }
 
 FileInfoLogger::FileInfoLogger(std::vector<fs::path> filePaths, fs::path logFilePath) :
-	filePaths_(filePaths.begin(), filePaths.end()),
-	logFilePath_(logFilePath)
+	filePaths_(filePaths.begin(), filePaths.end()), logFilePath_(logFilePath)
 {
 	internal_init();
 }
@@ -72,8 +69,7 @@ void FileInfoLogger::internal_init()
 	//Fisrt of all check if fNames containts logFilePath_
 	fs::path cpath(logFilePath_);
 	auto finded = std::find_if(
-		filePaths_.begin(),
-		filePaths_.end(),
+		filePaths_.begin(), filePaths_.end(),
 		[cpath](const fs::path& thisPath) {
 			return fs::equivalent(thisPath, cpath);
 		}
@@ -85,8 +81,7 @@ void FileInfoLogger::internal_init()
 	//Delete all dirs paths
 	filePaths_.erase(
 		std::remove_if(
-			filePaths_.begin(),
-			filePaths_.end(),
+			filePaths_.begin(), filePaths_.end(),
 			[](const fs::path& thisPath) { return fs::is_directory(thisPath); }
 		),
 		filePaths_.end()
@@ -103,8 +98,9 @@ void updateOffsets(std::vector<long> & offsets, int pos, long val)
 {
 	long diff = (!pos ? offsets[0] : offsets[pos] - offsets[pos - 1]) - val;
 	
-	for (size_t cp = pos; cp < offsets.size(); cp++)
+	for (size_t cp = pos; cp < offsets.size(); cp++) {
 		offsets[cp] -= diff;
+	}
 }
 
 bool FileInfoLogger::writeResultsIntoLog(std::fstream & sfile)
@@ -120,13 +116,11 @@ bool FileInfoLogger::writeResultsIntoLog(std::fstream & sfile)
 	while (visitedCount != filePaths_.size()) {
 		for (size_t i = 0; i < filePaths_.size(); i++) {
 			
-			if (visited[i]) continue;
-
-			if (!results[i]._Is_ready()) continue;
+			if (visited[i] || !results[i]._Is_ready()) continue;
 
 			FileInfo finfo = results[i].get();
 			
-			//Need correct error handling
+			//@todo: Need correct error handling
 			if (!finfo.is_correct) {
 				return false;
 				//NOTREACHED
@@ -193,9 +187,7 @@ bool FileInfoLogger::process()
 	for (size_t i = 0; i < filePaths_.size(); ++i) {
 		fs::path cpath = filePaths_[i];
 		results[i] = pool.enqueue(
-			[cpath]() {
-				return FileInfoExtract(cpath);
-			}
+			[cpath]() { return FileInfoExtract(cpath); }
 		);
 	}
 
