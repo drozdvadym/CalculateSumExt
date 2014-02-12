@@ -230,7 +230,6 @@ FileInfo FileInfoLogger::infoExtractorWrapper(fs::path& fpath, size_t idx)
     return (retVal);
 }
 
-
 //
 //
 //
