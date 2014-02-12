@@ -13,9 +13,9 @@
 //
 
 //
-//	THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
-//	EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
-//	WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
+// EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 //
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -39,11 +39,11 @@
 
 class FileInfoLogger {
 public:
-	FileInfoLogger(std::vector<std::wstring>& filePaths, std::wstring& logFilePath);
-	FileInfoLogger(std::vector<std::string>& filePaths,  std::string& logFilePath);
-	FileInfoLogger(std::vector<fs::path>& filePaths,     fs::path& logFilePath);
+    FileInfoLogger(std::vector<std::wstring>& filePaths, std::wstring& logFilePath);
+    FileInfoLogger(std::vector<std::string>& filePaths,  std::string& logFilePath);
+    FileInfoLogger(std::vector<fs::path>& filePaths,     fs::path& logFilePath);
 
-	bool process();
+    bool process();
 private:
     //deprecate copy constructor and assigment operator
     FileInfoLogger(const FileInfoLogger&);
