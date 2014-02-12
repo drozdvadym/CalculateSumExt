@@ -170,7 +170,7 @@ static void _t_args_error_occured()
 static void _t_unknwn_error_occured()
 {
     static const char errMessage[] =
-"An error occurred when calculated the files information.\n"
+        "An error occurred when calculated the files information.\n"
         "Sorry :(\n"
         "More detailed information will be in next version of extension"
     ;
