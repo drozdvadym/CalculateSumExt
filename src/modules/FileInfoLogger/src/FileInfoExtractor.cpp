@@ -42,7 +42,7 @@
 std::string getTimeCreation(fs::path&, boost::system::error_code&);
 std::string getFileMD5(fs::path&);
 std::string getHumanReadableSize(long long);
-std::string byte_to_hex_string(unsigned char);
+std::string byteToHexStr(unsigned char);
 
 ///////////////////////////////////////////////////////////////////////////////
 // %% BeginSection: definitions
@@ -183,7 +183,7 @@ std::string getFileMD5(fs::path& filePath)
     file.close();
 
     for (size_t i = 0; i < MD5_DIGEST_LENGTH; i++)
-        retVal += byte_to_hex_string(MD5res[i]);
+        retVal += byteToHexStr(MD5res[i]);
 
     return (retVal);
 }
@@ -218,7 +218,7 @@ std::string getHumanReadableSize(long long fileSize)
     return (retVal);
 }
 
-std::string byte_to_hex_string(unsigned char ch)
+std::string byteToHexStr(unsigned char ch)
 {
     std::string retVal(2, 0);
 
