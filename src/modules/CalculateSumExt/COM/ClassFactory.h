@@ -4,7 +4,7 @@
 //
 
 //
-// ClassFactory.h	(Edited by: V. Drozd)
+// ClassFactory.h    (Edited by: V. Drozd)
 // src/COM/ClassFactory.h
 //
 
@@ -13,13 +13,13 @@
 //
 
 /*
- *	This source is subject to the Microsoft Public License.
- *	See http://www.microsoft.com/opensource/licenses.mspx#Ms-PL.
- *	All other rights reserved.
+ *  This source is subject to the Microsoft Public License.
+ *  See http://www.microsoft.com/opensource/licenses.mspx#Ms-PL.
+ *  All other rights reserved.
  *
- *	THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, 
- *	EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
- *	WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+ *  THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, 
+ *  EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
+ *  WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
  */
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,7 @@
 #pragma once
 
 #include <unknwn.h> 
-	//IClassFactory
+    //IClassFactory
 #include <windows.h>
 
 ///////////////////////////////////////////////////////////////////////////////

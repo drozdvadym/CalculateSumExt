@@ -4,7 +4,7 @@
 //
 
 //
-// CalculateSumExt.h	(Edited by: V. Drozd)
+// CalculateSumExt.h    (Edited by: V. Drozd)
 // src/COM/CalculateSumExt.h
 //
 
@@ -17,13 +17,13 @@
 //
 
 /*
- *	This source is subject to the Microsoft Public License.
- *	See http://www.microsoft.com/opensource/licenses.mspx#Ms-PL.
- *	All other rights reserved.
+ *  This source is subject to the Microsoft Public License.
+ *  See http://www.microsoft.com/opensource/licenses.mspx#Ms-PL.
+ *  All other rights reserved.
  *
- *	THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, 
- *	EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
- *	WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+ *  THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, 
+ *  EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
+ *  WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
  */
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -34,18 +34,14 @@
 
 #include <windows.h>
 #include <shlobj.h>
-	//IShellExtInit and IContextMenu
+    //IShellExtInit and IContextMenu
 
 #include <string>
 #include <vector>
 
-using std::wstring;
-using std::vector;
-
 ///////////////////////////////////////////////////////////////////////////////
 // %% BeginSection: declarations
 //
-
 
 class CalculateSumExt : public IShellExtInit, public IContextMenu
 {
@@ -56,37 +52,59 @@ public:
     IFACEMETHODIMP_(ULONG) Release();
 
     // IShellExtInit
-    IFACEMETHODIMP Initialize(LPCITEMIDLIST pidlFolder, LPDATAOBJECT pDataObj, HKEY hKeyProgID);
+    IFACEMETHODIMP
+    Initialize(
+        LPCITEMIDLIST pidlFolder,
+        LPDATAOBJECT pDataObj,
+        HKEY hKeyProgID
+    );
 
     // IContextMenu
-    IFACEMETHODIMP QueryContextMenu(HMENU hMenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags);
+    IFACEMETHODIMP
+    QueryContextMenu(
+        HMENU hMenu,
+        UINT indexMenu,
+        UINT idCmdFirst,
+        UINT idCmdLast,
+        UINT uFlags
+    );
+
     IFACEMETHODIMP InvokeCommand(LPCMINVOKECOMMANDINFO pici);
-    IFACEMETHODIMP GetCommandString(UINT_PTR idCommand, UINT uFlags, UINT *pwReserved, LPSTR pszName, UINT cchMax);
-	
-	CalculateSumExt(void);
+
+    IFACEMETHODIMP
+    GetCommandString(
+        UINT_PTR idCommand,
+        UINT uFlags,
+        UINT *pwReserved,
+        LPSTR pszName,
+        UINT cchMax
+    );
+    
+    CalculateSumExt(void);
 
 protected:
-	~CalculateSumExt(void);
+    ~CalculateSumExt(void);
 
 private:
+    // The method that handles the "display" verb.
+    void OnVerbDisplayFileNameIndepend(
+        HWND hWnd,
+        std::vector<std::wstring>& fileNames
+    );
+
     // Reference count of component.
     long m_cRef;
 
-    // The name of the selected file.
-    wchar_t m_szSelectedFile[MAX_PATH];
+    //Needed to process FileInfoLogger
+    std::wstring selectedFile;
+    std::wstring workDir;
+    std::wstring logFileName;
+    std::vector<std::wstring> fileNames;
 
-	wchar_t workDir_[MAX_PATH];
-	const wchar_t *log_file_name;
-	
-    // The names of the selected files
-	vector<wstring> fileNames_;
-	
-    // The method that handles the "display" verb.
-    void OnVerbDisplayFileName(HWND hWnd);
-
-    PWSTR m_pszMenuText;
+    //Shell extention specific
+    PWSTR  m_pszMenuText;
     HANDLE m_hMenuBmp;
-    PCSTR m_pszVerb;
+    PCSTR  m_pszVerb;
     PCWSTR m_pwszVerb;
     PCWSTR m_pwszVerbCanonicalName;
     PCWSTR m_pwszVerbHelpText;

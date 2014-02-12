@@ -1,4 +1,4 @@
-LIBRARY	"CalculateSumExt"
+LIBRARY    "CalculateSumExt"
 EXPORTS
     DllGetClassObject   PRIVATE
     DllCanUnloadNow     PRIVATE

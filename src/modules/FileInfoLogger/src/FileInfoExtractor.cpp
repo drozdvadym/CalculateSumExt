@@ -4,14 +4,13 @@
 //
 
 //
-// FileInfoExtractor.cpp	(V. Drozd)
+// FileInfoExtractor.cpp (V. Drozd)
 // src/modules/FileInfoLogger/src/FileInfoExtractor.cpp
 //
 
 //
 // Provides functionality to get main information about the file
 //
-
 
 //
 // THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
@@ -26,7 +25,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "FileInfoExtractor.h"
-#include "openssl\md5.h"
+#include "openssl/md5.h"
 
 #include <ctime>
 #include <fstream>
@@ -40,8 +39,8 @@
 // %% BeginSection: local function declaration
 //
 
-std::string getTimeCreation(fs::path, boost::system::error_code);
-std::string getFileMD5(fs::path);
+std::string getTimeCreation(fs::path&, boost::system::error_code&);
+std::string getFileMD5(fs::path&);
 std::string getHumanReadableSize(long long);
 std::string byte_to_hex_string(unsigned char);
 
@@ -49,183 +48,183 @@ std::string byte_to_hex_string(unsigned char);
 // %% BeginSection: definitions
 //
 
+#define _array_size(arr) sizeof(arr) / sizeof(arr[0])
+
 // Convert a wide Unicode string to an UTF8 string
-std::string utf8_encode(const std::wstring &wstr)
+std::string utf8_encode(const std::wstring& wstr)
 {
 #ifdef _WIN32
-	int size_needed = WideCharToMultiByte(
-		CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL
-	);
-	std::string retVal(size_needed, 0);
-	WideCharToMultiByte(
-		CP_UTF8, 0, &wstr[0], (int)wstr.size(), &retVal[0], size_needed, NULL, NULL
-	);
-#else //@todo: Write correct decoding for UNIX and LINUX like system
-	std::string retVal(wstr.begin(), wstr.end());
+    int size_needed = WideCharToMultiByte(
+        CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL
+    );
+    std::string retVal(size_needed, 0);
+    WideCharToMultiByte(
+        CP_UTF8, 0, &wstr[0], (int)wstr.size(), &retVal[0], size_needed, NULL, NULL
+    );
+#else
+    //@todo: Write correct decoding for UNIX and LINUX like system
+    std::string retVal(wstr.begin(), wstr.end());
 #endif
-	return (retVal);
+    return (retVal);
 }
 
-//if we have std::string we do nothing
-std::string utf8_encode(const std::string &str)
-{
-	return (str);
-}
 
 // Convert an UTF8 string to a wide Unicode String
-std::wstring utf8_decode(const std::string &str)
+std::wstring utf8_decode(const std::string& str)
 {
 #ifdef _WIN32
-	int size_needed = MultiByteToWideChar(
-		CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0
-	);
-	std::wstring retVal(size_needed, 0);
-	MultiByteToWideChar(
-		CP_UTF8, 0, &str[0], (int)str.size(), &retVal[0], size_needed
-	);
-#else //@todo: Write correct decoding for UNIX and LINUX like system
-	std::wstring retVal(str.begin(), str.end());
+    int size_needed = MultiByteToWideChar(
+        CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0
+    );
+    std::wstring retVal(size_needed, 0);
+    MultiByteToWideChar(
+        CP_UTF8, 0, &str[0], (int)str.size(), &retVal[0], size_needed
+    );
+#else
+    //@todo: Write correct decoding for UNIX and LINUX like system
+    std::wstring retVal(str.begin(), str.end());
 #endif
-	return (retVal);
+    return (retVal);
 }
 
-//if we have std::wstring we do nothing
-std::wstring utf8_decode(const std::wstring &wstr)
+FileInfo FileInfoExtract(fs::path& filePath)
 {
-	return (wstr);
-}
+    FileInfo finfo;
+    boost::system::error_code ec;
+    
+    finfo.is_correct = false;
 
-FileInfo FileInfoExtract(fs::path filePath)
-{
-	FileInfo finfo;
-	boost::system::error_code ec;
-	
-	finfo.is_correct = false;
+    do {
+#ifdef BOOST_WINDOWS_API
+        finfo.full_name = utf8_encode(filePath.c_str());
+        finfo.short_name = utf8_encode(filePath.filename().c_str());
+#else
+        finfo.full_name = filePath.c_str();
+        finfo.short_name = filePath.filename().c_str();
+#endif
 
-	do {
-		
-		finfo.full_name = utf8_encode(filePath.c_str());
-		finfo.short_name = utf8_encode(filePath.filename().c_str());
+        finfo.size = fs::file_size(filePath, ec);
+        if (!!ec) {
+            break;
+            //NOTREACHED
+        }
 
-		finfo.size = fs::file_size(filePath, ec);
-		if (!!ec) {
-			break;
-			//NOTREACHED
-		}
+        finfo.creation = getTimeCreation(filePath, ec);
+        if (!!ec) {
+            break;
+            //NOTREACHED
+        }
 
-		finfo.creation = getTimeCreation(filePath, ec);
-		if (!!ec) {
-			break;
-			//NOTREACHED
-		}
+        finfo.checksum = getFileMD5(filePath);
+        if (finfo.checksum.empty()) {
+            break;
+            //NOTREACHED
+        }
+        
+        finfo.human_readable_size = getHumanReadableSize(finfo.size);
 
-		finfo.checksum = getFileMD5(filePath);
-		if (finfo.checksum.empty()) {
-			break;
-			//NOTREACHED
-		}
-		
-		finfo.human_readable_size = getHumanReadableSize(finfo.size);
-		finfo.is_correct = true;
-	} while (0);
+        finfo.is_correct = true;
 
-	return (finfo);
+    } while (0);
+
+    return (finfo);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // %% BeginSection: local function definitions
 //
 
-std::string getTimeCreation(fs::path filePath, boost::system::error_code ec)
+std::string getTimeCreation(fs::path& filePath, boost::system::error_code& ec)
 {
-	std::string retval;
+    std::string retVal;
 
-	std::time_t time;
-	std::tm *tminfo;
+    std::time_t time;
+    std::tm *tminfo;
 
-	time = fs::last_write_time(filePath, ec);
-	if (!!ec) {
-		return retval;
-		//NOTREACHED
-	}
+    time = fs::last_write_time(filePath, ec);
+    if (!!ec) {
+        return retVal;
+        //NOTREACHED
+    }
 
-	tminfo = std::localtime(&time);
+    tminfo = std::localtime(&time);
 
-	retval += std::to_string(tminfo->tm_mday) + "/";
-	retval += std::to_string(tminfo->tm_mon + 1) + "/";
-	retval += std::to_string(tminfo->tm_year + 1900);
+    retVal += std::to_string(tminfo->tm_mday) + "/";
+    retVal += std::to_string(tminfo->tm_mon + 1) + "/";
+    retVal += std::to_string(tminfo->tm_year + 1900);
 
-	return (retval);
+    return (retVal);
 }
 
-std::string getFileMD5(fs::path filePath)
+std::string getFileMD5(fs::path& filePath)
 {
-	std::string retval;
+    std::string retVal;
 
-	//calculate optimal BUF_SIZE due to file_size ???
-	const int BUF_SIZE = 2048;
-	unsigned char data[BUF_SIZE];
-	unsigned char c[MD5_DIGEST_LENGTH];
+    static const int BUF_SIZE = 4096;
+    unsigned char data[BUF_SIZE];
+    unsigned char MD5res[MD5_DIGEST_LENGTH];
 
-	std::ifstream file(filePath.c_str(), std::ios::binary);
-	MD5_CTX mdContext;
+    std::ifstream file(filePath.c_str(), std::ios::binary);
 
-	if (!file.is_open()) {
-		return retval;
-		/*NOTREACHED*/
-	}
+    if (!file.is_open()) {
+        return retVal;
+        /*NOTREACHED*/
+    }
 
-	MD5_Init(&mdContext);
+    MD5_CTX mdContext;
+    MD5_Init(&mdContext);
 
-	while (file.read((char *)data, BUF_SIZE))
-		MD5_Update(&mdContext, data, BUF_SIZE);
+    while (file.read((char *)data, BUF_SIZE))
+        MD5_Update(&mdContext, data, BUF_SIZE);
 
-	MD5_Update(&mdContext, data, file.gcount());
-	MD5_Final(c, &mdContext);
+    MD5_Update(&mdContext, data, file.gcount());
+    MD5_Final(MD5res, &mdContext);
 
-	file.close();
+    file.close();
 
-	for (size_t i = 0; i < MD5_DIGEST_LENGTH; i++) {
-		retval += byte_to_hex_string(c[i]);
-	}
+    for (size_t i = 0; i < MD5_DIGEST_LENGTH; i++)
+        retVal += byte_to_hex_string(MD5res[i]);
 
-	return (retval);
+    return (retVal);
 }
 
 std::string getHumanReadableSize(long long fileSize)
 {
+    static const auto _SIZE_TB = 1024LL * 1024LL * 1024LL * 1024LL;
+    static const char *sizesPrefix[] = { " Tera ", " Giga ", " Mega ", " Kilo ", " " };
 
-	if (!fileSize) return std::string("0 bytes");
+    if (!fileSize) {
+        return std::string("0 bytes");
+        //NOTREACHED
+    }
 
-	static const auto _SIZE_TB = 1024LL * 1024LL * 1024LL * 1024LL;
+    std::string retVal;
 
-	std::string retval;
+    long long curSize;
+    long long delim = _SIZE_TB;
 
-	long long curSize;
-	char *sizesPrefix[] = { " Tera ", " Giga ", " Mega ", " Kilo ", " " };
+    for (size_t i = 0; i < _array_size(sizesPrefix); i++, delim /= 1024LL) {
+        curSize = fileSize / delim;
+        fileSize %= delim;
+        
+        if (curSize) {
+            retVal += std::to_string(curSize) + sizesPrefix[i];
+            retVal += (1 == curSize) ? "byte " : "bytes ";
+        }
+    }
+    //Remove last space symbol
+    retVal.erase(retVal.end() - 1);
 
-	long long curDelim = _SIZE_TB;
-	for (size_t i = 0; i < 5; i++, curDelim /= 1024LL) {
-		curSize = fileSize / curDelim;
-		fileSize %= curDelim;
-		
-		if (curSize) {
-			retval += std::to_string(curSize) + sizesPrefix[i];
-			retval += (1 == curSize) ? "byte " : "bytes ";
-		}
-	}
-	//Remove last space symbol
-	retval.erase(retval.end() - 1);
-
-	return (retval);
+    return (retVal);
 }
 
 std::string byte_to_hex_string(unsigned char ch)
 {
-	char tmpRes[3];
-	std::sprintf(tmpRes, "%02x", ch);
+    std::string retVal(2, 0);
 
-	return std::string(tmpRes);
+    std::sprintf(&retVal[0], "%02x", ch);
+
+    return (retVal);
 }
 
 //

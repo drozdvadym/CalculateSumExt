@@ -4,18 +4,18 @@
 //
 
 //
-// FileInfoExtractor.h	(V. Drozd)
+// FileInfoExtractor.h (V. Drozd)
 // src/modules/FileInfoLogger/src/FileInfoExtractor.h
 //
 
 //
-// Provides functionality to get main information about the file
+// Provides functionality to fetch main information about the file
 //
 
 //
-//	THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
-//	EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
-//	WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
+// EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 //
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,14 +24,14 @@
 
 #pragma once
 
-#include "CalculateSum\Types.h"
+#include "CalculateSum/Types.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
 // %% BeginSection: declarations
 //
 
-FileInfo FileInfoExtract(fs::path filePath);
+FileInfo FileInfoExtract(fs::path& filePath);
 
 //
 //

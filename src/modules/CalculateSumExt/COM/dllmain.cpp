@@ -25,15 +25,13 @@
 //
 
 /*
- *	This source is subject to the Microsoft Public License.
- *	See http://www.microsoft.com/opensource/licenses.mspx#Ms-PL.
- *	All other rights reserved.
+ *  See http://www.microsoft.com/opensource/licenses.mspx#Ms-PL.
+ *  All other rights reserved.
  *
- *	THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, 
- *	EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
- *	WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+ *  THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
+ *  EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
  */
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // %% BeginSection: includes
@@ -49,62 +47,62 @@
 
 // {C26734F0-2436-4CC1-AE16-37F18D96E67B}
 static const GUID CLSID_CalculateSumExt = {
-		0xc26734f0, 0x2436, 0x4cc1, {
-			0xae, 0x16, 0x37, 0xf1, 0x8d, 0x96, 0xe6, 0x7b
-		} 
+        0xc26734f0, 0x2436, 0x4cc1, {
+            0xae, 0x16, 0x37, 0xf1, 0x8d, 0x96, 0xe6, 0x7b
+        } 
 };
 
 HINSTANCE g_hInst   = NULL;
 long      g_cDllRef = 0;
 
 const WCHAR *_s_file_ext[] = {
-	L"*",
-	L"Directory"
+    L"*",
+    L"Directory"
 };
 
 BOOL APIENTRY
 DllMain(
-	HMODULE hModule,
-	DWORD dwReason,
-	LPVOID lpReserved
-	)
+    HMODULE hModule,
+    DWORD dwReason,
+    LPVOID lpReserved
+    )
 {
-	switch (dwReason) {
-		case DLL_PROCESS_ATTACH:
-			// Hold the instance of this DLL module, we will use it to get the 
-			// path of the DLL to register the component.
-			g_hInst = hModule;
-			DisableThreadLibraryCalls(hModule);
-			break;
-		case DLL_THREAD_ATTACH:
-		case DLL_THREAD_DETACH:
-		case DLL_PROCESS_DETACH:
-			break;
-	}
+    switch (dwReason) {
+        case DLL_PROCESS_ATTACH:
+            // Hold the instance of this DLL module, we will use it to get the 
+            // path of the DLL to register the component.
+            g_hInst = hModule;
+            DisableThreadLibraryCalls(hModule);
+            break;
+        case DLL_THREAD_ATTACH:
+        case DLL_THREAD_DETACH:
+        case DLL_PROCESS_DETACH:
+            break;
+    }
 
-	return TRUE;
+    return TRUE;
 }
 
 //
-//   FUNCTION: DllGetClassObject
+// FUNCTION: DllGetClassObject
 //
-//   PURPOSE: Create the class factory and query to the specific interface.
+// PURPOSE: Create the class factory and query to the specific interface.
 //
-//   PARAMETERS:
-//   * rclsid - The CLSID that will associate the correct data and code.
-//   * riid - A reference to the identifier of the interface that the caller 
-//     is to use to communicate with the class object.
-//   * ppv - The address of a pointer variable that receives the interface 
-//     pointer requested in riid. Upon successful return, *ppv contains the 
-//     requested interface pointer. If an error occurs, the interface pointer 
-//     is NULL. 
+// PARAMETERS:
+//  * rclsid - The CLSID that will associate the correct data and code.
+//  * riid - A reference to the identifier of the interface that the caller 
+//    is to use to communicate with the class object.
+//  * ppv - The address of a pointer variable that receives the interface 
+//    pointer requested in riid. Upon successful return, *ppv contains the 
+//    requested interface pointer. If an error occurs, the interface pointer 
+//    is NULL. 
 //
 
 STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, void **ppv)
 {
     HRESULT hr = CLASS_E_CLASSNOTAVAILABLE;
 
-	if (IsEqualCLSID(CLSID_CalculateSumExt, rclsid)) {
+    if (IsEqualCLSID(CLSID_CalculateSumExt, rclsid)) {
         hr = E_OUTOFMEMORY;
 
         ClassFactory *pClassFactory = new ClassFactory();
@@ -119,12 +117,12 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, void **ppv)
 
 
 //
-//   FUNCTION: DllCanUnloadNow
+// FUNCTION: DllCanUnloadNow
 //
-//   PURPOSE: Check if we can unload the component from the memory.
+// PURPOSE: Check if we can unload the component from the memory.
 //
-//   NOTE: The component can be unloaded from the memory when its reference 
-//   count is zero (i.e. nobody is still using the component).
+// NOTE: The component can be unloaded from the memory when its reference 
+// count is zero (i.e. nobody is still using the component).
 // 
 
 STDAPI DllCanUnloadNow(void)
@@ -134,9 +132,9 @@ STDAPI DllCanUnloadNow(void)
 
 
 //
-//   FUNCTION: DllRegisterServer
+// FUNCTION: DllRegisterServer
 //
-//   PURPOSE: Register the COM server and the context menu handler.
+// PURPOSE: Register the COM server and the context menu handler.
 // 
 
 STDAPI DllRegisterServer(void)
@@ -151,19 +149,19 @@ STDAPI DllRegisterServer(void)
 
     // Register the component.
     hr = RegisterInprocServer(
-		szModule,
-		CLSID_CalculateSumExt,
+        szModule,
+        CLSID_CalculateSumExt,
         L"CalculateSum.CalculateSumExt Class", 
         L"Apartment"
-	);
+    );
     if (SUCCEEDED(hr)) {
         // Register the context menu handler.
-		for (int i = 0; i < 2; i++) {
-			hr = RegisterShellExtContextMenuHandler(
-				_s_file_ext[i], CLSID_CalculateSumExt,
-				L"CalculateSum.CalculateSumExt"
-			);
-		}
+        for (int i = 0; i < 2; i++) {
+            hr = RegisterShellExtContextMenuHandler(
+                _s_file_ext[i], CLSID_CalculateSumExt,
+                L"CalculateSum.CalculateSumExt"
+            );
+        }
 
 
     }
@@ -173,9 +171,9 @@ STDAPI DllRegisterServer(void)
 
 
 //
-//   FUNCTION: DllUnregisterServer
+// FUNCTION: DllUnregisterServer
 //
-//   PURPOSE: Unregister the COM server and the context menu handler.
+// PURPOSE: Unregister the COM server and the context menu handler.
 // 
 
 STDAPI DllUnregisterServer(void)
@@ -189,15 +187,19 @@ STDAPI DllUnregisterServer(void)
     }
 
     // Unregister the component.
-	hr = UnregisterInprocServer(CLSID_CalculateSumExt);
+    hr = UnregisterInprocServer(CLSID_CalculateSumExt);
     if (SUCCEEDED(hr)) {
         // Unregister the context menu handler.
-		for (int i = 0; i < 2; i++) {
-			hr = UnregisterShellExtContextMenuHandler(
-				_s_file_ext[i], CLSID_CalculateSumExt
-			);
-		}
+        for (int i = 0; i < 2; i++) {
+            hr = UnregisterShellExtContextMenuHandler(
+                _s_file_ext[i], CLSID_CalculateSumExt
+            );
+        }
     }
 
     return hr;
 }
+
+//
+//
+//

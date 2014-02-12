@@ -40,25 +40,25 @@ namespace fs = ::boost::filesystem;
 //
 
 struct FileInfo {
-	std::string full_name;
-	std::string short_name;
-	std::string checksum;
-	std::string creation;
-	std::string human_readable_size;
-	long long   size;
-	bool        is_correct;
+    std::string full_name;
+    std::string short_name;
+    std::string checksum;
+    std::string creation;
+    std::string human_readable_size;
+    long long   size;
+    bool        is_correct;
 
-	std::string toString()
-	{
-		std::string retVal;
+    std::string toString()
+    {
+        std::string retVal;
 
-		retVal += short_name + ", ";
-		retVal += "size is: " + human_readable_size + ", ";
-		retVal += "created: " + creation + ", ";
-		retVal += "MD5: " + checksum + "\n";
+        retVal += short_name + ", ";
+        retVal += "size is: " + human_readable_size + ", ";
+        retVal += "created: " + creation + ", ";
+        retVal += "MD5: " + checksum + "\n";
 
-		return (retVal);
-	}
+        return (retVal);
+    }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -66,12 +66,10 @@ struct FileInfo {
 //
 
 // Convert a wide Unicode string to an UTF8 string
-std::string utf8_encode(const std::wstring &wstr);
-std::string utf8_encode(const std::string &wstr);
+std::string utf8_encode(const std::wstring& wstr);
 
 // Convert an UTF8 string to a wide Unicode String
-std::wstring utf8_decode(const std::string &str);
-std::wstring utf8_decode(const std::wstring &str);
+std::wstring utf8_decode(const std::string& str);
 
 //
 //

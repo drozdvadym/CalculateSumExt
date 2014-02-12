@@ -4,7 +4,7 @@
 //
 
 //
-// ClassFactory.cpp	(V. Drozd)
+// ClassFactory.cpp    (V. Drozd)
 // src/COM/ClassFactory.cpp
 //
 
@@ -13,13 +13,12 @@
 //
 
 /*
- *	This source is subject to the Microsoft Public License.
- *	See http://www.microsoft.com/opensource/licenses.mspx#Ms-PL.
- *	All other rights reserved.
+ *  See http://www.microsoft.com/opensource/licenses.mspx#Ms-PL.
+ *  All other rights reserved.
  *
- *	THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, 
- *	EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
- *	WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+ *  THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
+ *  EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
  */
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -60,7 +59,7 @@ IFACEMETHODIMP ClassFactory::QueryInterface(REFIID riid, void** ppv)
     if (riid == IID_IUnknown || riid == IID_IClassFactory)
        *ppv = static_cast<IClassFactory *>( this );
    
-	if (*ppv) {
+    if (*ppv) {
         AddRef();
         return( S_OK );
     }
@@ -98,7 +97,7 @@ IFACEMETHODIMP ClassFactory::CreateInstance(IUnknown *pUnkOuter, REFIID riid, vo
         hr = E_OUTOFMEMORY;
 
         // Create the COM component.
-		CalculateSumExt *pExt = new (std::nothrow) CalculateSumExt();
+        CalculateSumExt *pExt = new (std::nothrow) CalculateSumExt();
         if (pExt) {
             // Query the specified interface.
             hr = pExt->QueryInterface(riid, ppv);

@@ -28,7 +28,10 @@
 
 #include <vector>
 #include <string>
+
 #include <future>
+#include <mutex>
+#include <condition_variable>
 
 ///////////////////////////////////////////////////////////////////////////////
 // %% BeginSection: declarations
@@ -36,20 +39,34 @@
 
 class FileInfoLogger {
 public:
-	FileInfoLogger(std::vector<std::wstring> filePaths, std::wstring logFilePath);
-	FileInfoLogger(std::vector<std::string> filePaths, std::string logFilePath);
-	FileInfoLogger(std::vector<fs::path> filePaths, fs::path logFilePath);
+	FileInfoLogger(std::vector<std::wstring>& filePaths, std::wstring& logFilePath);
+	FileInfoLogger(std::vector<std::string>& filePaths,  std::string& logFilePath);
+	FileInfoLogger(std::vector<fs::path>& filePaths,     fs::path& logFilePath);
 
 	bool process();
 private:
-	void internal_init();
+    //deprecate copy constructor and assigment operator
+    FileInfoLogger(const FileInfoLogger&);
+    FileInfoLogger& operator=(const FileInfoLogger&);
 
-	bool writeResultsIntoLog(std::fstream & sfile);
+    void internalInit();
+    bool writeResultsIntoLog();
+    FileInfo infoExtractorWrapper(fs::path& fpath, const size_t taskIdx);
 
-	std::vector<fs::path>  filePaths_;
-	fs::path               logFilePath_;
 
-	std::vector<std::future<FileInfo>> results;
+    std::vector<fs::path>  file_paths;
+    fs::path               log_file_path;
+
+    //Vector with all results for FileInfoExtract
+    std::vector<std::future<FileInfo>> results;
+
+    //For synchronization of threads @{
+    bool    is_extract_done;
+    size_t  idx_extract_done_task;
+
+    mutable std::mutex              extract_done_mutex;
+    mutable std::condition_variable extract_done_condition;
+    //@}
 };
 
 //

@@ -4,7 +4,7 @@
 //
 
 //
-// FileInfoLogger.cpp	(V. Drozd)
+// FileInfoLogger.cpp    (V. Drozd)
 // src/modules/FileInfoLogger/src/FileInfoLogger.cpp
 //
 
@@ -15,14 +15,12 @@
 //
 // @todo: 
 // 1. add normal error handling
-// 2. add normal thread handling
-//  2.1. if one thread error occurred -> stop all another
 //
 
 //
-//	THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
-//	EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
-//	WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+//  THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
+//  EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
+//  WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 //
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -35,7 +33,6 @@
 #include "FileInfoExtractor.h"
 
 #include "ThreadPool.h"
-#include <chrono>
 
 #include <algorithm>
 
@@ -43,160 +40,196 @@
 #include <fstream>
 
 ///////////////////////////////////////////////////////////////////////////////
-// %% BeginSection: definitions
+// %% BeginSection: public function member definitions
 //
 
-FileInfoLogger::FileInfoLogger(std::vector<std::wstring> filePaths, std::wstring logFilePath) :
-	filePaths_(filePaths.begin(), filePaths.end()), logFilePath_(logFilePath)
+FileInfoLogger::FileInfoLogger(std::vector<std::wstring>& filePaths, std::wstring& logFilePath)
+    : file_paths(filePaths.begin(), filePaths.end())
+    , log_file_path(logFilePath)
 {
-	internal_init();
+    internalInit();
 }
 
-FileInfoLogger::FileInfoLogger(std::vector<std::string> filePaths, std::string logFilePath) :
-	filePaths_(filePaths.begin(), filePaths.end()), logFilePath_(logFilePath)
+FileInfoLogger::FileInfoLogger(std::vector<std::string>& filePaths, std::string& logFilePath)
+    : file_paths(filePaths.begin(), filePaths.end())
+    , log_file_path(logFilePath)
 {
-	internal_init();
+    internalInit();
 }
 
-FileInfoLogger::FileInfoLogger(std::vector<fs::path> filePaths, fs::path logFilePath) :
-	filePaths_(filePaths.begin(), filePaths.end()), logFilePath_(logFilePath)
+FileInfoLogger::FileInfoLogger(std::vector<fs::path>& filePaths, fs::path& logFilePath)
+    : file_paths(filePaths.begin(), filePaths.end())
+    , log_file_path(logFilePath)
 {
-	internal_init();
+    internalInit();
 }
-
-void FileInfoLogger::internal_init()
-{
-	//Fisrt of all check if fNames containts logFilePath_
-	fs::path cpath(logFilePath_);
-	auto finded = std::find_if(
-		filePaths_.begin(), filePaths_.end(),
-		[cpath](const fs::path& thisPath) {
-			return fs::equivalent(thisPath, cpath);
-		}
-	);
-	if (finded != filePaths_.end()) {
-		filePaths_.erase(finded);
-	}
-
-	//Delete all dirs paths
-	filePaths_.erase(
-		std::remove_if(
-			filePaths_.begin(), filePaths_.end(),
-			[](const fs::path& thisPath) { return fs::is_directory(thisPath); }
-		),
-		filePaths_.end()
-	);
-
-	//And sort file list in alphabetical order
-	std::sort(filePaths_.begin(), filePaths_.end());
-
-	//Allocate memory for results
-	results.resize(filePaths_.size());
-}
-
-void updateOffsets(std::vector<long> & offsets, int pos, long val)
-{
-	long diff = (!pos ? offsets[0] : offsets[pos] - offsets[pos - 1]) - val;
-	
-	for (size_t cp = pos; cp < offsets.size(); cp++) {
-		offsets[cp] -= diff;
-	}
-}
-
-bool FileInfoLogger::writeResultsIntoLog(std::fstream & sfile)
-{
-	std::string res;
-
-	std::vector<bool> visited(filePaths_.size());
-	std::vector<long> offsets(filePaths_.size());
-	size_t visitedCount = 0;
-
-	std::chrono::microseconds dura = std::chrono::microseconds(20);
-	
-	while (visitedCount != filePaths_.size()) {
-		for (size_t i = 0; i < filePaths_.size(); i++) {
-			
-			if (visited[i] || !results[i]._Is_ready()) continue;
-
-			FileInfo finfo = results[i].get();
-			
-			//@todo: Need correct error handling
-			if (!finfo.is_correct) {
-				return false;
-				//NOTREACHED
-			}
-
-			res = finfo.toString();
-
-			// Rewrite the file
-			// Awesome :)
-			{
-				std::stringstream buffer;
-
-				//Go to position for insert new line
-				sfile.seekp(offsets[i], std::ios_base::beg);
-
-				//Read and save in string stream all text that must be rewrited
-				buffer << sfile.rdbuf();
-
-				//Write new data in file
-				sfile.seekp(offsets[i], std::ios_base::beg);
-				sfile << res.c_str();
-
-				//Paste saved data from string stream
-				sfile << buffer.str().c_str();
-				updateOffsets(offsets, i, res.length() + 1);
-			}
-
-			visited[i] = true;
-			visitedCount++;
-		}
-		//Wait some little time 
-		std::this_thread::sleep_for(dura);
-
-		//@todo: need correct thread handling!!!
-
-		// Every next cycle we sleep longer
-		// dura += std::chrono::microseconds(20);
-	}
-
-	return true;
-}
-
-// Minimum 1 thread for writeResultsIntoLog and 1 for FileInfoExtract
-const auto min_thread_needed = 2U;
 
 bool FileInfoLogger::process()
 {
-	//Create logFile
-	std::fstream file(logFilePath_.c_str(), std::ios::out | std::ios::in | std::ios::trunc);
-	if (!file.is_open()) {
-		return false;
-		//NOTREACHED
-	}
-	
-	//Calculate optimal pool size
-	size_t thread_count = std::max(min_thread_needed, std::thread::hardware_concurrency());
+    // wrap the main function
+    auto binded_fn = std::bind(&FileInfoLogger::writeResultsIntoLog, this);
+    auto task = std::packaged_task<bool()>(binded_fn);
 
-	ThreadPool pool(thread_count);
-	
-	std::future<bool> state = pool.enqueue(
-		&FileInfoLogger::writeResultsIntoLog, std::ref(*this), std::ref(file)
-	);
+    std::future<bool> result = task.get_future();
 
-	for (size_t i = 0; i < filePaths_.size(); ++i) {
-		fs::path cpath = filePaths_[i];
-		results[i] = pool.enqueue(
-			[cpath]() { return FileInfoExtract(cpath); }
-		);
-	}
+    //And run main task in thread
+    std::thread(std::move(task)).detach();
 
-	pool.wait();
+    //Create thread pool with optimal size for logger
+    ThreadPool pool(std::max(1U, std::thread::hardware_concurrency() - 1));
 
-	file.close();
+    //Add tasks for calculating file information
+    for (size_t i = 0; i < file_paths.size(); ++i) {
+        fs::path &cpath = file_paths[i];
+        results[i] = pool.addTask(
+            [this, &cpath, i]() { return infoExtractorWrapper(cpath, i); }
+        );
+    }
 
-	return state.get();
+    //Wait for result
+    //That mean all task is done or an error occurred
+    result.wait();
+
+    bool status = result.get();
+    
+    //false == status -> error occurred and we must clear task queue
+    if (!status)
+        pool.clearTaskQueue();
+
+    return (status);
+    
 }
+///////////////////////////////////////////////////////////////////////////////
+// %% BeginSection: private function member definitions
+//
+
+void FileInfoLogger::internalInit()
+{
+    //Fisrt of all check if fNames containts logFilePath_
+    fs::path cpath(log_file_path);
+    auto finded = std::find_if(
+        file_paths.begin(),
+        file_paths.end(),
+        [&cpath](const fs::path& thisPath) {
+            return fs::equivalent(thisPath, cpath);
+        }
+    );
+    if (finded != file_paths.end()) {
+        file_paths.erase(finded);
+    }
+
+    //Delete all directory paths
+    file_paths.erase(
+        std::remove_if(
+            file_paths.begin(),
+            file_paths.end(),
+            [](const fs::path& thisPath) { return fs::is_directory(thisPath); }
+        ),
+        file_paths.end()
+    );
+
+    //Sort file list in alphabetical order
+    std::sort(file_paths.begin(), file_paths.end());
+
+    //Allocate memory for results
+    results.resize(file_paths.size());
+}
+
+void inline updateOffsets(std::vector<long>& offsets, int pos, long val)
+{
+    long diff = (!pos ? offsets[0] : offsets[pos] - offsets[pos - 1]) - val;
+    
+    for (size_t cp = pos; cp < offsets.size(); cp++) {
+        offsets[cp] -= diff;
+    }
+}
+
+bool FileInfoLogger::writeResultsIntoLog()
+{
+    //Open (create) logFile
+    std::fstream file(log_file_path.c_str(), std::ios::out | std::ios::in | std::ios::trunc);
+    if (!file.is_open()) {
+        return false;
+        //NOTREACHED
+    }
+
+    std::string res;
+
+    std::vector<bool> visited(file_paths.size());
+    std::vector<long> offsets(file_paths.size());
+    size_t visitedCount = 0;
+
+    is_extract_done = false;
+
+    while (visitedCount != file_paths.size()) {
+        //Wait for one work is done
+        {
+            std::unique_lock<std::mutex> lock(extract_done_mutex);
+
+            while (!is_extract_done)
+                extract_done_condition.wait(lock);
+
+            //and wait for result
+            auto idx = idx_extract_done_task;
+            while (!results[idx]._Is_ready());
+        }
+        is_extract_done = false;
+
+        for (size_t i = 0; i < file_paths.size(); i++) {
+            
+            if (visited[i] || !results[i]._Is_ready()) continue;
+
+            FileInfo finfo = results[i].get();
+            
+            //@todo: Need correct error handling
+            if (!finfo.is_correct) {
+                return false;
+                //NOTREACHED
+            }
+
+            res = finfo.toString();
+            // Rewrite the file
+            {
+                std::stringstream buffer;
+
+                //Go to position for insert new line
+                file.seekp(offsets[i], std::ios_base::beg);
+
+                //Read and save in string stream all text that must be rewrited
+                buffer << file.rdbuf();
+
+                //Write new data in file
+                file.seekp(offsets[i], std::ios_base::beg);
+                file << res.c_str();
+
+                //Paste saved data from string stream
+                file << buffer.str().c_str();
+                updateOffsets(offsets, i, res.length() + 1);
+            }
+
+            visited[i] = true;
+            visitedCount++;
+        }
+    }
+
+    file.close();
+    return true;
+}
+
+FileInfo FileInfoLogger::infoExtractorWrapper(fs::path& fpath, size_t idx)
+{
+    FileInfo retVal = FileInfoExtract(fpath);
+
+    {
+        std::unique_lock<std::mutex> lock(extract_done_mutex);
+        is_extract_done = true;
+        idx_extract_done_task = idx;
+        extract_done_condition.notify_one(); //Wake up main thread
+    }
+
+    return (retVal);
+}
+
 
 //
 //
