@@ -162,8 +162,6 @@ STDAPI DllRegisterServer(void)
                 L"CalculateSum.CalculateSumExt"
             );
         }
-
-
     }
 
     return hr;
