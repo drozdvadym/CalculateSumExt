@@ -187,6 +187,16 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\modules\CalculateSumExt\prj\VS2013\CalculateSumExt.vcxproj">
+      <Project>{0fbc1066-34c1-4d1d-bf57-03659bab0541}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\modules\FileInfoLogger\prj\VS2013\FileInfoLogger.vcxproj">
+      <Project>{d9c87bf5-3dcd-42e0-bb70-2cae945e8253}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

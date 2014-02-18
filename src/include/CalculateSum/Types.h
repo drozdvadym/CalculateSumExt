@@ -48,28 +48,23 @@ struct FileInfo {
     long long   size;
     bool        is_correct;
 
-    std::string toString()
-    {
-        std::string retVal;
+	std::string toString();
 
-        retVal += short_name + ", ";
-        retVal += "size is: " + human_readable_size + ", ";
-        retVal += "created: " + creation + ", ";
-        retVal += "MD5: " + checksum + "\n";
-
-        return (retVal);
-    }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// %% BeginSection: functions declarations
+// %% BeginSection: functions definitions
 //
 
-// Convert a wide Unicode string to an UTF8 string
-std::string utf8_encode(const std::wstring& wstr);
+inline std::string FileInfo::toString()
+{
+	std::string retVal(short_name);
+	retVal += ", size is: " + human_readable_size;
+	retVal += ", created: " + creation;
+	retVal += ", MD5: " + checksum + "\n";
 
-// Convert an UTF8 string to a wide Unicode String
-std::wstring utf8_decode(const std::string& str);
+	return (retVal);
+}
 
 //
 //

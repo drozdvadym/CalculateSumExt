@@ -106,7 +106,15 @@ int main(int argc, char *argv[])
         return (EXIT_FAILURE);
         //NOTREACHED
     }
-    std::cout << "Result saved to " << fullLogFileName.string() << " file" << std::endl;
+
+#ifdef _WIN32
+	setlocale(0, "");
+#else
+# error Need to test
+#endif
+
+	std::cout << "Result saved to " << fullLogFileName.string() << " file" << std::endl;
+
     return 0;
 }
 

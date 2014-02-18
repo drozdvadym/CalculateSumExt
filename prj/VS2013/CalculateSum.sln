@@ -1,15 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CalculateSumExt", "..\..\src\modules\CalculateSumExt\prj\VS2013\CalculateSumExt.vcxproj", "{0FBC1066-34C1-4D1D-BF57-03659BAB0541}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D9C87BF5-3DCD-42E0-BB70-2CAE945E8253} = {D9C87BF5-3DCD-42E0-BB70-2CAE945E8253}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FileInfoLogger", "..\..\src\modules\FileInfoLogger\prj\VS2013\FileInfoLogger.vcxproj", "{D9C87BF5-3DCD-42E0-BB70-2CAE945E8253}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "modules", "modules", "{CC23DD4C-82AF-495F-9631-3F7AC3B9558C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{247C53B9-8AD6-490A-95C8-F7F4DE993592}"
@@ -24,10 +15,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CalculateSum", "CalculateSu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bin", "bin", "{A855BC1C-3368-4D50-A611-B533869C7104}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CalculateSumExt", "..\..\src\modules\CalculateSumExt\prj\VS2013\CalculateSumExt.vcxproj", "{0FBC1066-34C1-4D1D-BF57-03659BAB0541}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FileInfoLogger", "..\..\src\modules\FileInfoLogger\prj\VS2013\FileInfoLogger.vcxproj", "{D9C87BF5-3DCD-42E0-BB70-2CAE945E8253}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testSample", "..\..\src\bin\testSample\prj\VS2013\testSample.vcxproj", "{F086221F-3AC6-493A-A1A4-B973F1AD2D77}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D9C87BF5-3DCD-42E0-BB70-2CAE945E8253} = {D9C87BF5-3DCD-42E0-BB70-2CAE945E8253}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,8 +61,8 @@ Global
 		{CC23DD4C-82AF-495F-9631-3F7AC3B9558C} = {247C53B9-8AD6-490A-95C8-F7F4DE993592}
 		{14CF2B80-497C-4EC7-86EF-4E3E6AF18486} = {247C53B9-8AD6-490A-95C8-F7F4DE993592}
 		{A855BC1C-3368-4D50-A611-B533869C7104} = {247C53B9-8AD6-490A-95C8-F7F4DE993592}
-		{D9C87BF5-3DCD-42E0-BB70-2CAE945E8253} = {CC23DD4C-82AF-495F-9631-3F7AC3B9558C}
 		{0FBC1066-34C1-4D1D-BF57-03659BAB0541} = {CC23DD4C-82AF-495F-9631-3F7AC3B9558C}
+		{D9C87BF5-3DCD-42E0-BB70-2CAE945E8253} = {CC23DD4C-82AF-495F-9631-3F7AC3B9558C}
 		{8D4E8DA4-E1F6-4A09-95BE-5E0E8F8ED7BE} = {14CF2B80-497C-4EC7-86EF-4E3E6AF18486}
 		{F086221F-3AC6-493A-A1A4-B973F1AD2D77} = {A855BC1C-3368-4D50-A611-B533869C7104}
 	EndGlobalSection

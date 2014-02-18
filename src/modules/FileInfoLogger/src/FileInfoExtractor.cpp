@@ -31,10 +31,6 @@
 #include <fstream>
 #include <iomanip>
 
-#ifdef _WIN32
-# include <Windows.h>
-#endif
-
 ///////////////////////////////////////////////////////////////////////////////
 // %% BeginSection: local function declaration
 //
@@ -50,43 +46,6 @@ std::string byteToHexStr(unsigned char);
 
 #define _array_size(arr) sizeof(arr) / sizeof(arr[0])
 
-// Convert a wide Unicode string to an UTF8 string
-std::string utf8_encode(const std::wstring& wstr)
-{
-#ifdef _WIN32
-    int size_needed = WideCharToMultiByte(
-        CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL
-    );
-    std::string retVal(size_needed, 0);
-    WideCharToMultiByte(
-        CP_UTF8, 0, &wstr[0], (int)wstr.size(), &retVal[0], size_needed, NULL, NULL
-    );
-#else
-    //@todo: Write correct decoding for UNIX and LINUX like system
-    std::string retVal(wstr.begin(), wstr.end());
-#endif
-    return (retVal);
-}
-
-
-// Convert an UTF8 string to a wide Unicode String
-std::wstring utf8_decode(const std::string& str)
-{
-#ifdef _WIN32
-    int size_needed = MultiByteToWideChar(
-        CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0
-    );
-    std::wstring retVal(size_needed, 0);
-    MultiByteToWideChar(
-        CP_UTF8, 0, &str[0], (int)str.size(), &retVal[0], size_needed
-    );
-#else
-    //@todo: Write correct decoding for UNIX and LINUX like system
-    std::wstring retVal(str.begin(), str.end());
-#endif
-    return (retVal);
-}
-
 FileInfo FileInfoExtract(fs::path& filePath)
 {
     FileInfo finfo;
@@ -95,22 +54,17 @@ FileInfo FileInfoExtract(fs::path& filePath)
     finfo.is_correct = false;
 
     do {
-#ifdef BOOST_WINDOWS_API
-        finfo.full_name = utf8_encode(filePath.c_str());
-        finfo.short_name = utf8_encode(filePath.filename().c_str());
-#else
-        finfo.full_name = filePath.c_str();
-        finfo.short_name = filePath.filename().c_str();
-#endif
+		finfo.full_name = filePath.string();
+		finfo.short_name = filePath.filename().string();
 
         finfo.size = fs::file_size(filePath, ec);
-        if (!!ec) {
+        if (ec) {
             break;
             //NOTREACHED
         }
 
         finfo.creation = getTimeCreation(filePath, ec);
-        if (!!ec) {
+        if (ec) {
             break;
             //NOTREACHED
         }
