@@ -32,16 +32,3 @@ DEPENDENCIES:
 This software depend on boost (boost filesystem), OpenSSL (calcMD5 function) and WIndows API.
 
 Software has some C++11 tricks
-
-
-|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|
-|---	|---	|---	|---	|---	|---	|---	|---	|---	|---	|---	|
-|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|
-|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|
-|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|
-|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|
-|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|
-|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|
-|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|
-|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|
-|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|   	|
